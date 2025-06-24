@@ -1,0 +1,5 @@
+{
+  "name": "戰爭避難物資測驗",
+  "description": "一個互動式測驗，用於評估您對戰爭避難所必需物資的了解程度，並提供AI生成的反饋與建議。",
+  "requestFramePermissions": []
+}
