@@ -1,12 +1,12 @@
-
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
-import { Question, UserAnswers, EvaluationResult, RawQuestion, GeneratedQuestionsResponse } from '../types';
+import { Question, UserAnswers, EvaluationResult, GeneratedQuestionsResponse } from '../types';
 import { GEMINI_MODEL_QUESTION_GEN, GEMINI_MODEL_EVALUATION, TOTAL_QUESTIONS } from '../constants';
 
-if (!process.env.API_KEY) {
-  throw new Error("API_KEY environment variable is not set. Please set it before running the application.");
+const apiKey = (import.meta as any).env.VITE_GEMINI_API_KEY;
+if (!apiKey) {
+  throw new Error("VITE_GEMINI_API_KEY environment variable is not set. Please set it before running the application.");
 }
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey });
 
 function parseJsonFromGeminiResponse(text: string): any {
   let jsonStr = text.trim();
@@ -57,7 +57,7 @@ export const generateQuestions = async (): Promise<Question[]> => {
       }
     });
     
-    const parsedData: GeneratedQuestionsResponse = parseJsonFromGeminiResponse(response.text);
+    const parsedData: GeneratedQuestionsResponse = parseJsonFromGeminiResponse(response.text ?? '');
 
     if (!parsedData.questions || parsedData.questions.length !== TOTAL_QUESTIONS) {
       console.error("Generated questions data is invalid:", parsedData);
@@ -141,7 +141,7 @@ ${JSON.stringify(userAnswersForPrompt, null, 2)}
       }
     });
 
-    const parsedData: EvaluationResult = parseJsonFromGeminiResponse(response.text);
+    const parsedData: EvaluationResult = parseJsonFromGeminiResponse(response.text ?? '');
 
     // Basic validation of the parsed data structure
     if (typeof parsedData.score !== 'number' ||
@@ -165,4 +165,3 @@ ${JSON.stringify(userAnswersForPrompt, null, 2)}
     throw new Error("評估答案時發生未知錯誤。");
   }
 };
-    
